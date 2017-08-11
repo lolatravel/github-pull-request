@@ -3,7 +3,7 @@ CLI tool to manage GitHub PRs
 """
 from setuptools import find_packages, setup
 
-dependencies = ['click==6.7', 'pygithub==1.35']
+dependencies = ['click==6.7', 'pygithub==1.35', 'gitpython==2.1.5', 'termcolor==1.1.0']
 
 setup(
     name='git-pr',
@@ -21,7 +21,7 @@ setup(
     install_requires=dependencies,
     entry_points={
         'console_scripts': [
-            'git-pr = git_pr.cli:pr',
+            'git-pr = git_pr.cli:cli',
         ],
     },
     classifiers=[
