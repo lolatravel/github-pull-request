@@ -1,6 +1,6 @@
 import pytest
 from click.testing import CliRunner
-from github_pr import cli
+from gh_pr import cli
 
 
 @pytest.fixture
