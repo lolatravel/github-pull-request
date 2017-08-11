@@ -29,7 +29,7 @@ def get_github_token():
 def print_pull(pull):
     approved = '{0:5}'.format('\xE2\x9C\x94') if pull.approved else '{0:3}'.format('')
     line = colored('#{0:<6}'.format(pull.number), 'yellow')
-    line += colored(approved, 'green')
+    line += colored(approved, 'green' if pull.mergeable else 'magenta')
     line += colored('{0:8}'.format(pull.state), 'blue')
     line += colored('{0:20}'.format(pull.user), 'green')
     line += colored('{0}'.format(pull.title))

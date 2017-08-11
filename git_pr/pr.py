@@ -2,7 +2,7 @@ from github import Github
 from utils import namedtype
 
 
-Pull = namedtype('Pull', 'number, title, state, user, approved, commits, files')
+Pull = namedtype('Pull', 'number, title, state, mergeable, user, approved, commits, files')
 Commit = namedtype('Commit', 'sha, user, message')
 File = namedtype('File', 'name')
 
@@ -20,6 +20,7 @@ class PR(object):
     def list(self, state='open', check_approved=True):
         pulls = self._repo.get_pulls(state=state)
         return [Pull(number=p.number, title=p.title, state=p.state, user=p.user.name,
+                     mergeable=p.mergeable,
                      approved=self._check_approved(p) if check_approved else None) for p in pulls]
 
     def get(self, number, list_commits=True, list_files=True, check_approved=True):
@@ -34,4 +35,4 @@ class PR(object):
 
         return Pull(number=p.number, title=p.title, state=p.state, user=p.user.name,
                     approved=self._check_approved(p) if check_approved else None,
-                    commits=commits, files=files)
+                    mergeable=p.mergeable, commits=commits, files=files)
