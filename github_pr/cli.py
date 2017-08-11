@@ -48,7 +48,6 @@ class AliasedGroup(click.Group):
             ctx.fail('Unknown command: {0}'.format(cmd_name))
 
     def invoke(self, ctx):
-        return super(AliasedGroup, self).invoke(ctx)
         try:
             super(AliasedGroup, self).invoke(ctx)
         except Exception as e:
@@ -58,6 +57,7 @@ class AliasedGroup(click.Group):
 
 @click.command(
     cls=AliasedGroup,
+    invoke_without_command=True,
     context_settings=CONTEXT_SETTINGS)
 @click.option(
     '--remote',
@@ -74,6 +74,8 @@ def pr(ctx, remote):
     owner, repository = get_remote_info(remote)
     github_token = get_github_token()
     ctx.obj.client = PR(owner, repository, github_token)
+    if ctx.invoked_subcommand is None:
+        ctx.invoke(list_prs)
 
 
 @pr.command('list')
@@ -94,15 +96,24 @@ def get_pr(ctx, number, files, commits):
     pull = client.get(number)
     print_pull(pull)
     if files:
-        click.echo()
+        click.echo('\n Files:')
         for f in pull.files:
             click.echo(colored('{0:4}{1}'.format('', f.name), 'green'))
     if commits:
-        click.echo()
+        click.echo('\n Commits:')
         for c in pull.commits:
             line = colored('{0:4}{1:8}'.format('', c.sha[:7]), 'yellow')
             line += colored(c.message, 'blue')
             click.echo(line)
+
+
+@pr.command('merge')
+@click.argument('number', type=click.types.INT)
+@click.pass_context
+def merge_pr(ctx, number):
+    client = ctx.obj.client
+    merge_sha = client.merge(number)
+    click.echo('#{0} merged: {1}'.format(number, merge_sha))
 
 
 def cli():

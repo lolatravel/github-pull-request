@@ -17,5 +17,5 @@ Simply run:
 
 To use it:
 
-    $ git-pr --help
+    $ git pr
 
