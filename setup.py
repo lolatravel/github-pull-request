@@ -6,9 +6,9 @@ from setuptools import find_packages, setup
 dependencies = ['click==6.7', 'pygithub==1.35', 'gitpython==2.1.5', 'termcolor==1.1.0']
 
 setup(
-    name='git-pr',
+    name='github-pr',
     version='0.0.1',
-    url='https://github.com/lamflam/git-pr',
+    url='https://github.com/lolatravel/github-pr',
     license='MIT',
     author='Kevin LaFlamme',
     author_email='kevin@lola.com',
@@ -21,7 +21,7 @@ setup(
     install_requires=dependencies,
     entry_points={
         'console_scripts': [
-            'git-pr = git_pr.cli:cli',
+            'git-pr = github_pr.cli:cli',
         ],
     },
     classifiers=[
