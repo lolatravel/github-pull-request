@@ -36,3 +36,5 @@ To use it:
     $ git pr ls   # or 
     $ git pr -h   # for more options
 
+# Example
+<image src="docs/screenshots/example.gif" width=700 />
