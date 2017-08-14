@@ -10,15 +10,16 @@ Here are [installation instructions](https://github.com/mitsuhiko/pipsi#readme).
 
 Simply run:
 
-    `$ pipsi install github-pull-request`
+    $ pipsi install github-pull-request
 
 Otherwise with pip:
-    `$ pip install github-pull-request`
+
+    $ pip install github-pull-request
 
 # Usage
 
 To use it:
 
-    `$ git pr ls` or 
-    `$ git pr -h` for more options
+    $ git pr ls   # or 
+    $ git pr -h   # for more options
 
