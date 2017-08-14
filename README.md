@@ -1,4 +1,4 @@
-# git pr
+# github-pull-request
 
 CLI tool to manage GitHub PRs
 
@@ -10,12 +10,15 @@ Here are [installation instructions](https://github.com/mitsuhiko/pipsi#readme).
 
 Simply run:
 
-    $ pipsi install .
+    `$ pipsi install github-pull-request`
 
+Otherwise with pip:
+    `$ pip install github-pull-request`
 
 # Usage
 
 To use it:
 
-    $ git pr
+    `$ git pr ls` or 
+    `$ git pr -h` for more options
 
