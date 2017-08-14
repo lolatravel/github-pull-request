@@ -23,7 +23,7 @@ def get_remote_info(remote):
 
 
 def get_github_token():
-    return os.environ.get('GIT_PR_GITHUB_TOKEN')
+    return os.environ.get('GITHUB_ACCESS_TOKEN')
 
 
 def print_pull(pull):

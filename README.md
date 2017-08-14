@@ -16,8 +16,18 @@ Otherwise with pip:
 
     $ pip install github-pull-request
 
-# Usage
+# Setup
+You must setup a github access token in order to be able to get or merge pull
+requests. To set one up:
 
+  - Got to *GitHub* -> *Settings*
+  - Click on *Personal Access Tokens*
+  - Click on *Generate new token*
+  - Select *repo* access, this should allow both listing and merging
+  - Copy the token and use type this into your shell `export GITHUB_ACCESS_TOKEN=[your token]`
+  - For best results, put the line above in your `.bashrc` file
+
+# Usage
 To use it:
 
     $ git pr ls   # or 
