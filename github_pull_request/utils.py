@@ -14,7 +14,21 @@ def namedtype(typename, fields):
 
 
 class _namedtype(dict):
+    """
+    This class is similar to namedtuple, except that the constructor does not
+    require all arguments to be present and will ignore addtional kwargs. It is
+    backed by a dict and is not careful to check for name collisions with
+    built in attributes so is not safe to use for arbitrary data.
 
+    Example use:
+        User = namedtype('User', 'first_name, last_name, email')
+        user = User(first_name='First', last_name='Last', extra='ignored')
+
+        user.first_name => 'First'
+        user.last_name => 'Last'
+        user.email => None
+        user.extra => AttributeError
+    """
     @property
     def _fields(self):
         return self.__class__._fields
