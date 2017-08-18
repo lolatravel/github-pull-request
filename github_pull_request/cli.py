@@ -6,6 +6,7 @@ from git import Repo
 from pr import PR
 
 
+# Map of aliased commands
 ALIASES = {
     'ls': 'list'
 }
@@ -13,6 +14,9 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 
 def get_remote_info(remote):
+    """
+    Extract the GitHub user/organization and repo name from the remote url.
+    """
     owner = None
     repository = None
     match = re.search('^(http[s]?\:\/\/|git@)github.com(\/|\:)([^/]+)\/([^/]+)(?:.git)', remote.url)
@@ -27,6 +31,9 @@ def get_github_token():
 
 
 def print_pull(pull):
+    """
+    Print a formatted and colored PR to the console.
+    """
     approved = '{0:5}'.format('\xE2\x9C\x94') if pull.approved else '{0:3}'.format('')
     line = colored('#{0:<6}'.format(pull.number), 'yellow')
     line += colored(approved, 'green' if pull.mergeable else 'magenta')
@@ -37,6 +44,10 @@ def print_pull(pull):
 
 
 class AliasedGroup(click.Group):
+    """
+    This class handles checking the alias map and invoking the correct
+    command if an entry is found.
+    """
 
     def get_command(self, ctx, cmd_name):
         rv = click.Group.get_command(self, ctx, cmd_name)
@@ -87,11 +98,15 @@ def list_prs(ctx):
 
 
 @pr.command('get')
-@click.argument('number', type=click.types.INT)
-@click.option('--files', is_flag=True)
-@click.option('--commits', is_flag=True)
+@click.argument('number', type=click.types.INT, metavar='<number>')
+@click.option('--files', is_flag=True, help='Flag to list files associated with the PR')
+@click.option('--commits', is_flag=True, help='Flag to list commits associated with the PR')
 @click.pass_context
 def get_pr(ctx, number, files, commits):
+    """
+    Retrive info about PR number <number>, optionally including the list of files
+    and commits associated with the PR.
+    """
     client = ctx.obj.client
     pull = client.get(number)
     print_pull(pull)
@@ -108,9 +123,13 @@ def get_pr(ctx, number, files, commits):
 
 
 @pr.command('merge')
-@click.argument('number', type=click.types.INT)
+@click.argument('number', type=click.types.INT, metavar='<number>')
 @click.pass_context
 def merge_pr(ctx, number):
+    """
+    Merge PR number <number>. The default message for the merge commit will contain the body
+    of the PR as well as the list of files and commits associated with the PR.
+    """
     client = ctx.obj.client
     merge_sha = client.merge(number)
     click.echo('#{0} merged: {1}'.format(number, merge_sha))
