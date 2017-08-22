@@ -38,7 +38,7 @@ def print_pull(pull):
     line = colored('#{0:<6}'.format(pull.number), 'yellow')
     line += colored(approved, 'green' if pull.mergeable else 'magenta')
     line += colored('{0:8}'.format(pull.state), 'blue')
-    line += colored('{0:20}'.format(pull.user), 'green')
+    line += colored('{0:20}'.format(pull.user.name), 'green')
     line += colored('{0}'.format(pull.title))
     click.echo(line)
 

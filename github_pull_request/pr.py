@@ -2,9 +2,10 @@ from github import Github, GithubException
 from utils import namedtype
 
 # Types
-Pull = namedtype('Pull', 'number, title, message, state, mergeable, user, approved, commits, files')
-Commit = namedtype('Commit', 'sha, user, message')
-File = namedtype('File', 'name')
+User = namedtype('User', 'name, url, icon_url')
+Pull = namedtype('Pull', 'number, title, message, state, mergeable, user, approved, commits, files, url, opened')
+Commit = namedtype('Commit', 'sha, user, message, url')
+File = namedtype('File', 'name, url')
 
 
 class PR(object):
@@ -48,7 +49,8 @@ class PR(object):
         """
         pulls = self._repo.get_pulls(state=state)
         return [Pull(number=p.number, title=p.title, message=p.body, state=p.state,
-                     user=p.user.name, mergeable=p.mergeable,
+                     user=User(name=p.user.name, url=p.user.html_url, icon_url=p.user.avatar_url),
+                     mergeable=p.mergeable, url=p.html_url, opened=p.created_at,
                      approved=self._check_approved(p) if check_approved else None) for p in pulls]
 
     def get(self, number, list_commits=True, list_files=True, check_approved=True):
@@ -65,15 +67,17 @@ class PR(object):
         p = self._repo.get_pull(number)
         commits = None
         if list_commits:
-            commits = [Commit(sha=c.sha, user=c.author.name, message=c.commit.message) for c in p.get_commits()]
+            commits = [Commit(sha=c.sha, user=c.author.name, message=c.commit.message, url=c.html_url)
+                       for c in p.get_commits()]
 
         files = None
         if list_files:
-            files = [File(name=f.filename) for f in p.get_files()]
+            files = [File(name=f.filename, url=f.blob_url) for f in p.get_files()]
 
-        return Pull(number=p.number, title=p.title, message=p.body, state=p.state, user=p.user.name,
+        return Pull(number=p.number, title=p.title, message=p.body, state=p.state, url=p.html_url,
+                    user=User(name=p.user.name, url=p.user.html_url, icon_url=p.user.avatar_url),
                     approved=self._check_approved(p) if check_approved else None,
-                    mergeable=p.mergeable, commits=commits, files=files)
+                    mergeable=p.mergeable, commits=commits, files=files, opened=p.created_at)
 
     def merge(self, number, message=None):
         """
