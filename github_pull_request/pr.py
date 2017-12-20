@@ -3,7 +3,7 @@ from utils import namedtype
 
 # Types
 User = namedtype('User', 'name, url, icon_url')
-Pull = namedtype('Pull', 'number, title, message, state, mergeable, user, approved, commits, files, url, opened')
+Pull = namedtype('Pull', 'number, title, message, state, mergeable, user, approved, merged, commits, files, url, opened')
 Commit = namedtype('Commit', 'sha, user, message, url')
 File = namedtype('File', 'name, url')
 
@@ -48,7 +48,7 @@ class PR(object):
         returns   list of `Pull`s
         """
         pulls = self._repo.get_pulls(state=state)
-        return [Pull(number=p.number, title=p.title, message=p.body, state=p.state,
+        return [Pull(number=p.number, title=p.title, message=p.body, state=p.state, merged=p.merged,
                      user=User(name=p.user.name, url=p.user.html_url, icon_url=p.user.avatar_url),
                      mergeable=p.mergeable, url=p.html_url, opened=p.created_at,
                      approved=self._check_approved(p) if check_approved else None) for p in pulls]
@@ -77,7 +77,7 @@ class PR(object):
 
         return Pull(number=p.number, title=p.title, message=p.body, state=p.state, url=p.html_url,
                     user=User(name=p.user.name, url=p.user.html_url, icon_url=p.user.avatar_url) if p.user else None,
-                    approved=self._check_approved(p) if check_approved else None,
+                    merged=p.merged, approved=self._check_approved(p) if check_approved else None,
                     mergeable=p.mergeable, commits=commits, files=files, opened=p.created_at)
 
     def merge(self, number, message=None):
