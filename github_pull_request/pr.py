@@ -67,7 +67,8 @@ class PR(object):
         p = self._repo.get_pull(number)
         commits = None
         if list_commits:
-            commits = [Commit(sha=c.sha, user=c.author.name, message=c.commit.message, url=c.html_url)
+            commits = [Commit(sha=c.sha, user=c.author.name if c.author else None,
+                              message=c.commit.message, url=c.html_url)
                        for c in p.get_commits()]
 
         files = None
@@ -75,7 +76,7 @@ class PR(object):
             files = [File(name=f.filename, url=f.blob_url) for f in p.get_files()]
 
         return Pull(number=p.number, title=p.title, message=p.body, state=p.state, url=p.html_url,
-                    user=User(name=p.user.name, url=p.user.html_url, icon_url=p.user.avatar_url),
+                    user=User(name=p.user.name, url=p.user.html_url, icon_url=p.user.avatar_url) if p.user else None,
                     approved=self._check_approved(p) if check_approved else None,
                     mergeable=p.mergeable, commits=commits, files=files, opened=p.created_at)
 
