@@ -97,7 +97,8 @@ class PR(object):
             commits = ['  Commits:']
             for c in p.get_commits():
                 msg = c.commit.message[:57] + '...' if len(c.commit.message) > 60 else c.commit.message
-                commits.append('{0:4}{1:8} {2:20} {3}'.format('', c.sha[:7], '<' + c.author.name + '>', msg))
+                author = c.author.name if c.author else c.commit.author.name
+                commits.append('{0:4}{1:8} {2:20} {3}'.format('', c.sha[:7], '<' + author + '>', msg))
 
             files = ['  Files:']
             for f in p.get_files():
