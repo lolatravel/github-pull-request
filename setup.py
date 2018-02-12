@@ -8,7 +8,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='github-pull-request',
-    version='0.0.5',
+    version='0.0.6',
     url='https://github.com/lolatravel/github-pull-request',
     license='MIT',
     author='Kevin LaFlamme',
