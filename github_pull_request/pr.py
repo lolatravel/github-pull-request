@@ -26,6 +26,8 @@ class PR(object):
             owner: lolatravel
             repo: github-pull-request
         """
+        self._owner = owner
+        self._repo_name = repo
         self._github = Github(auth_token)
         self._repo = self._github.get_repo('{0}/{1}'.format(owner, repo))
 
@@ -38,7 +40,7 @@ class PR(object):
         reviews = pull.get_reviews()
         return reduce(lambda a, r: a or r.state == 'APPROVED', reviews, False)
 
-    def list(self, state='open', check_approved=True):
+    def list(self, state='open', check_approved=True, contains=None):
         """
         List PRs
 
@@ -47,7 +49,12 @@ class PR(object):
 
         returns   list of `Pull`s
         """
-        pulls = self._repo.get_pulls(state=state)
+        if contains:
+            pulls = [self._repo.get_pull(i.number) 
+                     for i in list(self._github.search_issues('repo:{}/{} {}'.format(self._owner, self._repo_name, contains)))]
+            
+        else:
+            pulls = self._repo.get_pulls(state=state)
         return [Pull(number=p.number, title=p.title, message=p.body, state=p.state, merged=p.merged,
                      user=User(name=p.user.name, url=p.user.html_url, icon_url=p.user.avatar_url),
                      mergeable=p.mergeable, url=p.html_url, opened=p.created_at,
