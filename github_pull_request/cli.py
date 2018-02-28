@@ -1,5 +1,6 @@
 import re
 import os
+import webbrowser
 import click
 from termcolor import colored
 from git import Repo
@@ -12,6 +13,11 @@ ALIASES = {
 }
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
+remote_opt = click.option('--remote', default='origin', metavar='<github remote>', help='Name of the origin to use, must be a GitHub repo')
+contains_opt = click.option('--contains', metavar='<commit SHA>', help='Show pull requests containing a particular commit')
+files_opt = click.option('--files', is_flag=True, help='Flag to list files associated with the PR')
+commits_opt = click.option('--commits', is_flag=True, help='Flag to list commits associated with the PR')
+open_opt = click.option('--open', is_flag=True, help='Flag to open the PR in web browser')
 
 def get_remote_info(remote):
     """
@@ -70,13 +76,11 @@ class AliasedGroup(click.Group):
     cls=AliasedGroup,
     invoke_without_command=True,
     context_settings=CONTEXT_SETTINGS)
-@click.option(
-    '--remote',
-    default='origin',
-    metavar='<github remote>',
-    help='Name of the origin to use, must be a GitHub repo')
+@remote_opt
+@contains_opt
+@open_opt
 @click.pass_context
-def pr(ctx, remote):
+def pr(ctx, remote, contains, open):
     """
     CLI tool to manage GitHub PRs
     """
@@ -86,23 +90,28 @@ def pr(ctx, remote):
     github_token = get_github_token()
     ctx.obj.client = PR(owner, repository, github_token)
     if ctx.invoked_subcommand is None:
-        ctx.invoke(list_prs)
+        ctx.invoke(list_prs, contains=contains, open=open)
 
 
 @pr.command('list')
+@contains_opt
+@open_opt
 @click.pass_context
-def list_prs(ctx):
+def list_prs(ctx, contains, open):
     client = ctx.obj.client
-    for pull in client.list():
+    for pull in client.list(contains=contains):
         print_pull(pull)
+        if open:
+            webbrowser.open(pull.url)
 
 
 @pr.command('get')
 @click.argument('number', type=click.types.INT, metavar='<number>')
-@click.option('--files', is_flag=True, help='Flag to list files associated with the PR')
-@click.option('--commits', is_flag=True, help='Flag to list commits associated with the PR')
+@files_opt
+@commits_opt
+@open_opt
 @click.pass_context
-def get_pr(ctx, number, files, commits):
+def get_pr(ctx, number, files, commits, open):
     """
     Retrive info about PR number <number>, optionally including the list of files
     and commits associated with the PR.
@@ -120,6 +129,8 @@ def get_pr(ctx, number, files, commits):
             line = colored('{0:4}{1:8}'.format('', c.sha[:7]), 'yellow')
             line += colored(c.message, 'blue')
             click.echo(line)
+    if open:
+        webbrowser.open(pull.url)
 
 
 @pr.command('merge')
